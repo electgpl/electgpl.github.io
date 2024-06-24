@@ -1,38 +1,25 @@
+/* styles.css */
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: #f8f9fa;
 }
 
-header {
-    background-color: #4CAF50;
+header.jumbotron {
+    background: #343a40;
     color: white;
-    padding: 10px 0;
-    text-align: center;
-}
-
-nav ul {
-    list-style: none;
-    padding: 0;
-}
-
-nav ul li {
-    display: inline;
-    margin-right: 20px;
-}
-
-nav ul li a {
-    color: white;
-    text-decoration: none;
-}
-
-main {
-    padding: 20px;
+    padding: 2rem 1rem;
 }
 
 footer {
-    background-color: #f1f1f1;
-    text-align: center;
-    padding: 10px 0;
+    background-color: #343a40;
+    color: white;
+    padding: 1rem 0;
+}
+
+nav.navbar {
+    margin-bottom: 2rem;
+}
+
+main.container {
+    margin-top: 2rem;
 }
