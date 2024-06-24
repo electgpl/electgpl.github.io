@@ -8,44 +8,49 @@
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <!-- Contenido aquí -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="js/scripts.js"></script>
-</body>
-<body>
-    <header>
-        <h1>Bienvenido a Mi Curso Online</h1>
-        <nav>
-            <ul>
-                <li><a href="index.html">Inicio</a></li>
-                <li><a href="about.html">Sobre el Curso</a></li>
-                <li><a href="courses.html">Temario</a></li>
-                <li><a href="contact.html">Contacto</a></li>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Mi Curso Online</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
+                <li class="nav-item"><a class="nav-link" href="about.html">Sobre el Curso</a></li>
+                <li class="nav-item"><a class="nav-link" href="courses.html">Temario</a></li>
+                <li class="nav-item"><a class="nav-link" href="contact.html">Contacto</a></li>
             </ul>
-        </nav>
+        </div>
+    </nav>
+    <header class="jumbotron text-center">
+        <div class="container">
+            <h1 class="display-4">Bienvenido a Mi Curso Online</h1>
+            <p class="lead">Aprende nuevas habilidades desde la comodidad de tu hogar.</p>
+        </div>
     </header>
-    <main>
-        <section>
+    <main class="container">
+        <section class="my-5">
             <h2>Acerca del Curso</h2>
             <p>Descripción breve de tu curso.</p>
         </section>
-        <section>
+        <section class="my-5">
             <h2>Video del Curso</h2>
-            <iframe width="560" height="315" src="https://www.youtube.com/embed/VIDEO_ID?rel=0" frameborder="0" allowfullscreen></iframe>
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/VIDEO_ID?rel=0" allowfullscreen></iframe>
+            </div>
         </section>
-        <section>
+        <section class="my-5">
             <h2>Inscripción</h2>
             <p>Para inscribirte, haz clic en el botón de PayPal.</p>
-            <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YOUR_BUTTON_ID">
-                <img src="https://www.paypalobjects.com/es_XC/i/btn/btn_buynowCC_LG.gif" alt="Buy Now">
-            </a>
+            <a class="btn btn-primary" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YOUR_BUTTON_ID">Comprar Ahora</a>
         </section>
     </main>
-    <footer>
+    <footer class="bg-dark text-white text-center py-3">
         <p>© 2024 Mi Curso Online. Todos los derechos reservados.</p>
     </footer>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="js/scripts.js"></script>
 </body>
 </html>
