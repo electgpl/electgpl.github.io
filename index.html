@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Electgpl - Diseño Electrónico Avanzado</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -13,7 +14,7 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Ubuntu', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             color: #333;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -53,10 +54,14 @@
         .header h1 {
             font-size: 2.5em;
             margin-bottom: 10px;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-family: 'Ubuntu', sans-serif;
+            font-weight: 700;
+            color: #000 !important;
+        }
+
+        .header h1 .first-letter {
+            color: #e74c3c !important;
+            font-weight: 700;
         }
 
         .header .subtitle {
@@ -306,7 +311,7 @@
     <div class="container">
         <!-- Header -->
         <header class="header fade-in">
-            <h1>Electgpl</h1>
+            <h1><span class="first-letter">E</span>lectgpl</h1>
             <p class="subtitle">Ingenieria Electrónica - Diseño Electronico - Precompliance EMC - Comms y RF</p>
             <p style="color: #666; margin-bottom: 20px;">25 años de experiencia en proyectos aeroespaciales, médicos, militares e IoT</p>
             
