@@ -314,7 +314,7 @@
                 <span class="tag">Diseño Multilayer</span>
                 <span class="tag">Pre-Compliance</span>
                 <span class="tag">EMC y SI</span>
-                <span class="tag">Elementos Distribuidos</span>
+                <span class="tag">IoT</span>
                 <span class="tag">Antenas y Comms</span>
                 <span class="tag">Sistemas Embebidos</span>
             </div>
@@ -330,10 +330,10 @@
                 <h3>Cursos Especializados</h3>
                 <p>Formación avanzada en diseño electrónico de alta velocidad y radiofrecuencia</p>
                 <ul class="service-features">
-                    <li>Diseño Electronico Intermedio</li>
-                    <li>Diseño Electronico Avanzado</li>
-                    <li>Análisis de integridad de señal</li>
-                    <li>Técnicas de EMC</li>
+                    <li>Diseño Electrónico Intermedio</li>
+                    <li>Diseño Electrónico Avanzado</li>
+                    <li>Mejoras SI y EMC en PCBs</li>
+                    <li>Análisis de Pre-Compliance</li>
                     <li>Diseño de Antenas y Comms</li>
                 </ul>
                 <button class="btn" onclick="openModal('courses')">Ver Cursos</button>
@@ -349,8 +349,8 @@
                 <ul class="service-features">
                     <li>Revisión de diseños</li>
                     <li>Solución de problemas EMC</li>
-                    <li>Optimización de layouts</li>
-                    <li>Análisis de performance RF</li>
+                    <li>Optimización de BOM y layout</li>
+                    <li>Sistemas Embebidos</li>
                     <li>Análisis de Pre-Compliance</li>
                 </ul>
                 <button class="btn btn-secondary" onclick="openModal('consulting')">Solicitar Consulta</button>
@@ -364,16 +364,14 @@
                 <h3>Desarrollo de Proyectos</h3>
                 <p>Diseño completo desde concepto hasta producción</p>
                 <ul class="service-features">
-                    <li>Esquemáticos y PCB</li>
-                    <li>Simulaciones RF</li>
+                    <li>Diseño Electrónico</li>
                     <li>Prototipado y testing</li>
                     <li>Documentación técnica</li>
+                    <li>Sistemas Embebidos</li>
                     <li>Soporte en producción</li>
                 </ul>
                 <button class="btn" onclick="openModal('projects')">Iniciar Proyecto</button>
             </div>
-
-
         </section>
 
         <!-- Contact -->
@@ -422,7 +420,7 @@
                     <li><strong>Analisis de Pre-Compliance y EMC</strong> - Soluciones reales a problemas de compatibilidad</li>
                     <li><strong>Antenas, RF y SI</strong> - Desarrollo de antenas en PCB con simulacion de diseño e implementación</li>
                 </ul>
-                <a href="#" class="btn">Notificarme cuando estén listos</a>
+                <a href="mailto:electgpl@gmail.com?subject=Notificación de Cursos&body=Hola,%0A%0AMe interesa que me notifiques cuando estén listos tus cursos especializados.%0A%0AMi email: %0AMi área de interés: %0A%0ASaludos!" class="btn">Notificarme cuando estén listos</a>
             </div>
         </div>
     </div>
@@ -434,34 +432,34 @@
             <form id="consultingForm">
                 <div class="form-group">
                     <label>Nombre y Empresa:</label>
-                    <input type="text" required>
+                    <input type="text" name="nombre" required>
                 </div>
                 <div class="form-group">
                     <label>Email:</label>
-                    <input type="email" required>
+                    <input type="email" name="email" required>
                 </div>
                 <div class="form-group">
                     <label>Tipo de Proyecto:</label>
-                    <select required>
+                    <select name="tipo" required>
                         <option value="">Seleccionar...</option>
-                        <option value="emcfix">Problemas EMC</option>
-                        <option value="pcbdesign">Revisión de PCB</option>
-                        <option value="rfdesign">Diseño RF/Microondas</option>
-                        <option value="antenna">Diseño de Antenas</option>
-                        <option value="other">Otro</option>
+                        <option value="Solución de problemas EMC">Solución de problemas EMC</option>
+                        <option value="Revisión de diseños">Revisión de diseños</option>
+                        <option value="Optimización de BOM y layout">Optimización de BOM y layout</option>
+                        <option value="Sistemas Embebidos">Sistemas Embebidos</option>
+                        <option value="Otro">Otro</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>Descripción del Proyecto:</label>
-                    <textarea rows="4" required></textarea>
+                    <textarea rows="4" name="descripcion" required></textarea>
                 </div>
                 <div class="form-group">
                     <label>Urgencia:</label>
-                    <select required>
+                    <select name="urgencia" required>
                         <option value="">Seleccionar...</option>
-                        <option value="high">Alta (1-2 semanas)</option>
-                        <option value="medium">Media (1 mes)</option>
-                        <option value="low">Baja (2+ meses)</option>
+                        <option value="Alta (1-2 semanas)">Alta (1-2 semanas)</option>
+                        <option value="Media (1 mes)">Media (1 mes)</option>
+                        <option value="Baja (2+ meses)">Baja (2+ meses)</option>
                     </select>
                 </div>
                 <button type="submit" class="btn">Enviar Consulta</button>
@@ -477,45 +475,43 @@
             <form id="projectsForm">
                 <div class="form-group">
                     <label>Información de Contacto:</label>
-                    <input type="text" placeholder="Nombre y empresa" required>
+                    <input type="text" name="contacto" placeholder="Nombre y empresa" required>
                 </div>
                 <div class="form-group">
                     <label>Email:</label>
-                    <input type="email" required>
+                    <input type="email" name="email" required>
                 </div>
                 <div class="form-group">
                     <label>Industria:</label>
-                    <select required>
+                    <select name="industria" required>
                         <option value="">Seleccionar...</option>
-                        <option value="aerospace">Aeroespacial</option>
-                        <option value="medical">Médica</option>
-                        <option value="military">Militar/Defensa</option>
-                        <option value="iot">IoT/Consumer</option>
-                        <option value="automotive">Automotriz</option>
-                        <option value="industrial">Industrial</option>
-                        <option value="other">Otra</option>
+                        <option value="Aeroespacial">Aeroespacial</option>
+                        <option value="Médica">Médica</option>
+                        <option value="Militar/Defensa">Militar/Defensa</option>
+                        <option value="IoT/Consumer">IoT/Consumer</option>
+                        <option value="Automotriz">Automotriz</option>
+                        <option value="Industrial">Industrial</option>
+                        <option value="Otra">Otra</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>Descripción del Proyecto:</label>
-                    <textarea rows="5" placeholder="Describe tu proyecto, requisitos técnicos, frecuencias, potencias, etc." required></textarea>
+                    <textarea rows="5" name="descripcionProyecto" placeholder="Describe tu proyecto, requisitos técnicos, frecuencias, potencias, etc." required></textarea>
                 </div>
                 <div class="form-group">
                     <label>Presupuesto Estimado (USD):</label>
-                    <select>
+                    <select name="presupuesto">
                         <option value="">Seleccionar...</option>
-                        <option value="under5k">Menos de $5,000</option>
-                        <option value="5k-15k">$5,000 - $15,000</option>
-                        <option value="15k-50k">$15,000 - $50,000</option>
-                        <option value="over50k">Más de $50,000</option>
+                        <option value="Menos de $5,000">Menos de $5,000</option>
+                        <option value="$5,000 - $15,000">$5,000 - $15,000</option>
+                        <option value="$15,000 - $50,000">$15,000 - $50,000</option>
+                        <option value="Más de $50,000">Más de $50,000</option>
                     </select>
                 </div>
                 <button type="submit" class="btn">Iniciar Conversación</button>
             </form>
         </div>
     </div>
-
-
 
     <script>
         // Modal functionality
@@ -540,20 +536,38 @@
             });
         });
 
-        // Form submissions
+        // Form submissions with mailto functionality
         document.getElementById('consultingForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            alert('¡Gracias por tu consulta! Te contactaré en las próximas 24 horas.');
+            const formData = new FormData(e.target);
+            const nombre = formData.get('nombre') || 'No especificado';
+            const email = formData.get('email') || 'No especificado';
+            const tipo = formData.get('tipo') || 'No especificado';
+            const descripcion = formData.get('descripcion') || 'No especificado';
+            const urgencia = formData.get('urgencia') || 'No especificado';
+            
+            const subject = `Consultoría: ${tipo}`;
+            const body = `Hola,%0A%0ASolicito consultoría técnica:%0A%0ANombre: ${nombre}%0AEmail: ${email}%0ATipo de proyecto: ${tipo}%0AUrgencia: ${urgencia}%0A%0ADescripción:%0A${descripcion}%0A%0ASaludos!`;
+            
+            window.location.href = `mailto:electgpl@gmail.com?subject=${encodeURIComponent(subject)}&body=${body}`;
             closeModal('consulting');
         });
 
         document.getElementById('projectsForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            alert('¡Proyecto recibido! Revisaré los detalles y te responderé pronto.');
+            const formData = new FormData(e.target);
+            const contacto = formData.get('contacto') || 'No especificado';
+            const email = formData.get('email') || 'No especificado';
+            const industria = formData.get('industria') || 'No especificado';
+            const descripcionProyecto = formData.get('descripcionProyecto') || 'No especificado';
+            const presupuesto = formData.get('presupuesto') || 'No especificado';
+            
+            const subject = `Nuevo Proyecto - ${industria}`;
+            const body = `Hola,%0A%0ATengo un proyecto para desarrollar:%0A%0AContacto: ${contacto}%0AEmail: ${email}%0AIndustria: ${industria}%0APresupuesto: ${presupuesto}%0A%0ADescripción del proyecto:%0A${descripcionProyecto}%0A%0AEspero tu respuesta!`;
+            
+            window.location.href = `mailto:electgpl@gmail.com?subject=${encodeURIComponent(subject)}&body=${body}`;
             closeModal('projects');
         });
-
-
 
         // Smooth animations on scroll
         const observerOptions = {
