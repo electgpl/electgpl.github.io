@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ELECTGPL Packet Terminal</title>
+<script src="https://cdn.jsdelivr.net/npm/mqtt@5/dist/mqtt.min.js"></script>
 <style>
   body{
     font-family:"Courier New",monospace;background:#0b0b0b;color:#3ee66b;
@@ -26,11 +27,13 @@
   #status{margin-top:1em;min-height:1.4em;white-space:pre-wrap}
   .err{color:#ff6b6b}
   .ok{color:#3ee66b}
+  .dim{color:#5a8a63}
 </style>
 </head>
 <body>
 
 <h2>&gt; ELECTGPL PACKET TERMINAL</h2>
+<div id="conn" class="dim">Connecting...</div>
 
 <label>CALLSIGN / NAME (max <span id="maxTagShown">10</span>)</label>
 <input id="tag" maxlength="10" autocomplete="off" placeholder="LU7ABC">
@@ -39,24 +42,29 @@
 <textarea id="msg" rows="3" maxlength="70"></textarea>
 <small id="counter">70 left</small>
 
-<button id="sendBtn" onclick="send()">SEND</button>
+<button id="sendBtn" onclick="send()" disabled>CONNECTING...</button>
 <div id="status"></div>
 
 <script>
 // ---------------------------------------------------------------------------
-// Configuracion: debe coincidir con FIREBASE_HOST / FIREBASE_PATH del .ino
+// Configuracion: debe coincidir con el .ino (MQTT_HOST/PORT/USER/PASS/TOPIC)
 // ---------------------------------------------------------------------------
-const FIREBASE_HOST   = "TU-PROYECTO-default-rtdb.REGION.firebasedatabase.app";
-const FIREBASE_PATH   = "pending";
-const TAG_CHARS        = 10;
-const MSG_MAX_CHARS    = 70;
-const RATE_LIMIT_S     = 180;   // debe coincidir con RATE_LIMIT_S del .ino
+const MQTT_HOST    = "39916c176c124bab87c150a18e855172.s1.eu.hivemq.cloud";
+const MQTT_WSPORT  = 8884;    // puerto WebSocket/TLS -- confirmar en la consola
+const MQTT_USER    = "pepe_mqtt";
+const MQTT_PASS    = "9t8r5jhJ3tbZAyB";
+const MQTT_TOPIC   = "electgpl/board/in";
+
+const TAG_CHARS     = 10;
+const MSG_MAX_CHARS = 70;
+const RATE_LIMIT_S  = 180;    // debe coincidir con RATE_LIMIT_S del .ino
 
 const tagEl = document.getElementById('tag');
 const msgEl = document.getElementById('msg');
 const counterEl = document.getElementById('counter');
 const statusEl = document.getElementById('status');
 const btnEl = document.getElementById('sendBtn');
+const connEl = document.getElementById('conn');
 
 document.getElementById('maxTagShown').textContent = TAG_CHARS;
 document.getElementById('maxMsgShown').textContent = MSG_MAX_CHARS;
@@ -68,9 +76,9 @@ msgEl.oninput = () => {
 };
 
 // Identificador de sesion propio, sin login: distingue remitentes para el
-// rate-limit del lado del ESP32 (seccion 13/12 del firmware). Se puede
-// evadir borrando localStorage -- no es una identidad verificada, es una
-// higiene basica para un grupo de conocidos, no un mecanismo de seguridad.
+// rate-limit del lado del ESP32 (hashCid() en el firmware). No es una
+// identidad verificada -- se evade borrando localStorage -- alcanza como
+// higiene basica para un grupo de conocidos, no como mecanismo de seguridad.
 function getCid() {
   let cid = localStorage.getItem('electgpl_cid');
   if (!cid) {
@@ -86,19 +94,53 @@ function secondsLeft() {
   return dt < RATE_LIMIT_S ? (RATE_LIMIT_S - dt) : 0;
 }
 
-function updateThrottleUI() {
+let mqttReady = false;
+
+function updateButtonUI() {
+  if (!mqttReady) { btnEl.disabled = true; btnEl.textContent = 'CONNECTING...'; return; }
   const left = secondsLeft();
   if (left > 0) {
     btnEl.disabled = true;
     btnEl.textContent = 'WAIT ' + left + 's';
-    setTimeout(updateThrottleUI, 1000);
+    setTimeout(updateButtonUI, 1000);
   } else {
     btnEl.disabled = false;
     btnEl.textContent = 'SEND';
   }
 }
 
-async function send() {
+// ---------------------------------------------------------------------------
+// Conexion MQTT sobre WebSocket (los navegadores no hablan MQTT nativo).
+// ---------------------------------------------------------------------------
+const client = mqtt.connect(`wss://${MQTT_HOST}:${MQTT_WSPORT}/mqtt`, {
+  username: MQTT_USER,
+  password: MQTT_PASS,
+  clientId: 'web-' + Math.random().toString(16).slice(2),
+  clean: true,        // el navegador no necesita sesion persistente, solo publica
+  reconnectPeriod: 3000,
+});
+
+client.on('connect', () => {
+  mqttReady = true;
+  connEl.textContent = 'Connected';
+  connEl.className = 'ok';
+  updateButtonUI();
+});
+
+client.on('reconnect', () => {
+  mqttReady = false;
+  connEl.textContent = 'Reconnecting...';
+  connEl.className = 'dim';
+  updateButtonUI();
+});
+
+client.on('error', (err) => {
+  connEl.textContent = 'Connection error';
+  connEl.className = 'err';
+  console.error('MQTT error:', err);
+});
+
+function send() {
   const tag = tagEl.value.trim();
   const text = msgEl.value.trim();
 
@@ -111,35 +153,25 @@ async function send() {
     return;
   }
 
+  const payload = JSON.stringify({ tag: tag || 'ANON', text: text, cid: getCid() });
+
   btnEl.disabled = true;
   statusEl.textContent = 'Sending...';
 
-  const payload = {
-    tag:  tag || 'ANON',
-    text: text,
-    cid:  getCid(),
-    ts:   { ".sv": "timestamp" }
-  };
-
-  try {
-    const res = await fetch(
-      'https://' + FIREBASE_HOST + '/' + FIREBASE_PATH + '.json',
-      { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) }
-    );
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-
-    localStorage.setItem('electgpl_last', String(Date.now()));
-    statusEl.innerHTML = '<span class="ok">Queued. It will show up on the board shortly.</span>';
-    msgEl.value = '';
-    msgEl.oninput();
-  } catch (err) {
-    statusEl.innerHTML = '<span class="err">Could not send: ' + err.message + '</span>';
-  }
-
-  updateThrottleUI();
+  client.publish(MQTT_TOPIC, payload, { qos: 1 }, (err) => {
+    if (err) {
+      statusEl.innerHTML = '<span class="err">Could not send: ' + err.message + '</span>';
+    } else {
+      localStorage.setItem('electgpl_last', String(Date.now()));
+      statusEl.innerHTML = '<span class="ok">Sent. It should show up on the board shortly.</span>';
+      msgEl.value = '';
+      msgEl.oninput();
+    }
+    updateButtonUI();
+  });
 }
 
-updateThrottleUI();
+updateButtonUI();
 </script>
 </body>
 </html>
