@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ELECTGPL Packet Terminal</title>
+<style>
+  body{
+    font-family:"Courier New",monospace;background:#0b0b0b;color:#3ee66b;
+    max-width:520px;margin:2em auto;padding:0 1em;
+  }
+  h2{border-bottom:1px solid #2a2a2a;padding-bottom:.4em}
+  label{display:block;margin-top:1em;color:#8fdf9f}
+  input,textarea{
+    width:100%;box-sizing:border-box;font-family:inherit;font-size:1em;
+    background:#000;color:#3ee66b;border:1px solid #2a2a2a;padding:.6em;
+    margin-top:.3em;
+  }
+  input:focus,textarea:focus{outline:none;border-color:#3ee66b}
+  button{
+    width:100%;padding:.9em;margin-top:1.2em;background:#3ee66b;color:#031a0a;
+    border:0;font-weight:bold;font-size:1em;cursor:pointer;font-family:inherit;
+  }
+  button:disabled{background:#2a2a2a;color:#666;cursor:not-allowed}
+  small{color:#5a8a63}
+  #status{margin-top:1em;min-height:1.4em;white-space:pre-wrap}
+  .err{color:#ff6b6b}
+  .ok{color:#3ee66b}
+</style>
+</head>
+<body>
+
+<h2>&gt; ELECTGPL PACKET TERMINAL</h2>
+
+<label>CALLSIGN / NAME (max <span id="maxTagShown">10</span>)</label>
+<input id="tag" maxlength="10" autocomplete="off" placeholder="LU7ABC">
+
+<label>MESSAGE (max <span id="maxMsgShown">70</span>)</label>
+<textarea id="msg" rows="3" maxlength="70"></textarea>
+<small id="counter">70 left</small>
+
+<button id="sendBtn" onclick="send()">SEND</button>
+<div id="status"></div>
+
+<script>
+// ---------------------------------------------------------------------------
+// Configuracion: debe coincidir con FIREBASE_HOST / FIREBASE_PATH del .ino
+// ---------------------------------------------------------------------------
+const FIREBASE_HOST   = "TU-PROYECTO-default-rtdb.REGION.firebasedatabase.app";
+const FIREBASE_PATH   = "pending";
+const TAG_CHARS        = 10;
+const MSG_MAX_CHARS    = 70;
+const RATE_LIMIT_S     = 180;   // debe coincidir con RATE_LIMIT_S del .ino
+
+const tagEl = document.getElementById('tag');
+const msgEl = document.getElementById('msg');
+const counterEl = document.getElementById('counter');
+const statusEl = document.getElementById('status');
+const btnEl = document.getElementById('sendBtn');
+
+document.getElementById('maxTagShown').textContent = TAG_CHARS;
+document.getElementById('maxMsgShown').textContent = MSG_MAX_CHARS;
+tagEl.maxLength = TAG_CHARS;
+msgEl.maxLength = MSG_MAX_CHARS;
+
+msgEl.oninput = () => {
+  counterEl.textContent = (MSG_MAX_CHARS - msgEl.value.length) + ' left';
+};
+
+// Identificador de sesion propio, sin login: distingue remitentes para el
+// rate-limit del lado del ESP32 (seccion 13/12 del firmware). Se puede
+// evadir borrando localStorage -- no es una identidad verificada, es una
+// higiene basica para un grupo de conocidos, no un mecanismo de seguridad.
+function getCid() {
+  let cid = localStorage.getItem('electgpl_cid');
+  if (!cid) {
+    cid = (crypto.randomUUID ? crypto.randomUUID() : String(Math.random()));
+    localStorage.setItem('electgpl_cid', cid);
+  }
+  return cid;
+}
+
+function secondsLeft() {
+  const last = parseInt(localStorage.getItem('electgpl_last') || '0', 10);
+  const dt = Math.floor((Date.now() - last) / 1000);
+  return dt < RATE_LIMIT_S ? (RATE_LIMIT_S - dt) : 0;
+}
+
+function updateThrottleUI() {
+  const left = secondsLeft();
+  if (left > 0) {
+    btnEl.disabled = true;
+    btnEl.textContent = 'WAIT ' + left + 's';
+    setTimeout(updateThrottleUI, 1000);
+  } else {
+    btnEl.disabled = false;
+    btnEl.textContent = 'SEND';
+  }
+}
+
+async function send() {
+  const tag = tagEl.value.trim();
+  const text = msgEl.value.trim();
+
+  if (!text) {
+    statusEl.innerHTML = '<span class="err">Write a message first.</span>';
+    return;
+  }
+  if (secondsLeft() > 0) {
+    statusEl.innerHTML = '<span class="err">Please wait before sending another message.</span>';
+    return;
+  }
+
+  btnEl.disabled = true;
+  statusEl.textContent = 'Sending...';
+
+  const payload = {
+    tag:  tag || 'ANON',
+    text: text,
+    cid:  getCid(),
+    ts:   { ".sv": "timestamp" }
+  };
+
+  try {
+    const res = await fetch(
+      'https://' + FIREBASE_HOST + '/' + FIREBASE_PATH + '.json',
+      { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) }
+    );
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+
+    localStorage.setItem('electgpl_last', String(Date.now()));
+    statusEl.innerHTML = '<span class="ok">Queued. It will show up on the board shortly.</span>';
+    msgEl.value = '';
+    msgEl.oninput();
+  } catch (err) {
+    statusEl.innerHTML = '<span class="err">Could not send: ' + err.message + '</span>';
+  }
+
+  updateThrottleUI();
+}
+
+updateThrottleUI();
+</script>
+</body>
+</html>
